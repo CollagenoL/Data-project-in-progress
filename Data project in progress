@@ -1,0 +1,107 @@
+let mouthX, mouthY; 
+let targetX, targetY; 
+let score = 0;
+let level = 1;
+let targetScore = 3; 
+let timeLimit = 10; 
+let timeLeft = timeLimit;
+let gameOver = false;
+let targetImage; 
+
+function preload() {
+  targetImage = loadImage('target.png'); 
+}
+
+function setup() {
+  createCanvas(600, 400);
+  mouthX = width / 2;
+  mouthY = height / 2;
+  spawnTarget();
+  setInterval(updateTime, 1000); 
+}
+
+function draw() {
+  if (gameOver) {
+    displayGameOver();
+    return;
+  }
+
+  background(200);
+
+  
+  fill(255, 0, 0);
+  ellipse(mouthX, mouthY, 40, 40);
+  mouthX = mouseX;
+  mouthY = mouseY;
+
+  
+  image(targetImage, targetX, targetY, 30, 30); 
+
+  
+  let d = dist(mouthX, mouthY, targetX + 15, targetY + 15); 
+  if (d < 35) {
+    score++;
+    spawnTarget();
+  }
+
+  
+  fill(0);
+  textSize(24);
+  text("Score: " + score, 10, 30);
+  text("Level: " + level, 10, 60);
+  text("Time Left: " + timeLeft, 10, 90);
+
+ 
+  if (score >= targetScore) {
+    nextLevel();
+  }
+
+  
+  if (timeLeft <= 0) {
+    gameOver = true;
+  }
+}
+
+function spawnTarget() {
+  targetX = random(20, width - 50); // Account for image size
+  targetY = random(20, height - 50);
+}
+
+function updateTime() {
+  if (!gameOver) {
+    timeLeft--;
+  }
+}
+
+function nextLevel() {
+  level++;
+  if (level > 5) {
+    gameOver = true;
+    displayWinMessage();
+  } else {
+    
+    targetScore += 2; 
+    timeLimit -= 2; 
+    timeLeft = timeLimit; 
+    score = 0; 
+    spawnTarget();
+  }
+}
+
+function displayGameOver() {
+  background(255, 0, 0);
+  fill(255);
+  textSize(32);
+  textAlign(CENTER, CENTER);
+  text("Game Over!", width / 2, height / 2 - 20);
+  text("You reached Level: " + level, width / 2, height / 2 + 20);
+}
+
+function displayWinMessage() {
+  background(0, 255, 0);
+  fill(255);
+  textSize(32);
+  textAlign(CENTER, CENTER);
+  text("Congratulations!", width / 2, height / 2 - 20);
+  text("You completed all levels!", width / 2, height / 2 + 20);
+}
